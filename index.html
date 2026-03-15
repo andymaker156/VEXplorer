@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VEX Docs Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0a0c10;
+      --surface:  #111318;
+      --card:     #161a22;
+      --border:   #222835;
+      --accent:   #e63946;
+      --accent2:  #f4a261;
+      --blue:     #4cc9f0;
+      --green:    #2ec4b6;
+      --text:     #e2e8f0;
+      --muted:    #6b7280;
+      --mono:     'JetBrains Mono', monospace;
+      --sans:     'Space Grotesk', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #0f1117 0%, #1a1f2e 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .logo-text span { color: var(--accent); }
+
+    .header-search {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      max-width: 520px;
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── Sidebar ── */
+    aside {
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      background: var(--surface);
+    }
+
+    .sidebar-section {
+      margin-bottom: 8px;
+    }
+
+    .sidebar-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 20px 6px;
+    }
+
+    .filter-group {
+      padding: 0 12px;
+    }
+
+    .filter-select {
+      width: 100%;
+      padding: 7px 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+      margin-bottom: 8px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+
+    .filter-select:focus { border-color: var(--accent); }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 12px 0;
+    }
+
+    .quick-links { padding: 0 12px; }
+
+    .quick-link-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 7px 10px;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 12px;
+      cursor: pointer;
+      margin-bottom: 2px;
+      transition: all .15s;
+    }
+
+    .quick-link-btn:hover {
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .quick-link-btn .ql-icon {
+      display: inline-block;
+      width: 16px;
+      margin-right: 6px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    /* ── Main ── */
+    main {
+      padding: 28px 36px;
+      overflow-y: auto;
+    }
+
+    /* ── Search bar ── */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 28px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 13px 14px 13px 42px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    #search-input::placeholder { color: var(--muted); }
+    #search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(230,57,70,.12);
+    }
+
+    .search-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 7px 18px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+
+    .search-btn:hover { opacity: .85; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .tab {
+      padding: 8px 18px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-weight: 500;
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: -1px;
+      transition: color .15s;
+    }
+
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Results ── */
+    #results-count {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .result-card {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color .2s, transform .15s;
+      font-family: var(--sans);
+      color: var(--text);
+    }
+
+    .result-card:hover {
+      border-color: rgba(230,57,70,.4);
+      transform: translateY(-1px);
+    }
+
+    .result-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .result-title {
+      font-family: var(--mono);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--blue);
+      flex: 1;
+    }
+
+    .result-badges {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+
+    .badge-platform {
+      background: rgba(76,201,240,.15);
+      color: var(--blue);
+    }
+
+    .badge-lang-py {
+      background: rgba(46,196,182,.15);
+      color: var(--green);
+    }
+
+    .badge-lang-cpp {
+      background: rgba(244,162,97,.15);
+      color: var(--accent2);
+    }
+
+    .result-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .result-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      background: rgba(255,255,255,.05);
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .score-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 999px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px;
+      transition: width .4s;
+    }
+
+    /* ── API Detail Panel ── */
+    #detail-panel {
+      display: none;
+    }
+
+    #detail-panel.visible { display: block; }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      padding: 6px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .back-btn:hover { color: var(--text); border-color: var(--muted); }
+
+    .detail-title {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--blue);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .detail-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .detail-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .detail-card-value {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .signature-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent2);
+      margin-bottom: 16px;
+      word-break: break-all;
+    }
+
+    .code-block {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      overflow-x: auto;
+      white-space: pre;
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      margin-top: 20px;
+    }
+
+    .obj-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .obj-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .obj-list li::before {
+      content: '→';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .alt-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .alt-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      padding: 8px 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: border-color .15s;
+      font-family: var(--sans);
+      color: var(--text);
+    }
+
+    .alt-item:hover { border-color: rgba(230,57,70,.4); }
+
+    .alt-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--blue);
+      flex: 1;
+    }
+
+    .alt-score {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── States ── */
+    .empty-state {
+      text-align: center;
+      padding: 64px 0;
+      color: var(--muted);
+    }
+
+    .empty-state .big-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p { font-size: 13px; line-height: 1.6; }
+
+    .loading {
+      text-align: center;
+      padding: 48px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-box {
+      background: rgba(230,57,70,.08);
+      border: 1px solid rgba(230,57,70,.3);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: var(--accent);
+      font-size: 13px;
+    }
+
+    /* ── Get API tab ── */
+    .get-api-form {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus { border-color: var(--accent); }
+
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-color: var(--bg);
+      padding-right: 28px;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      padding: 10px 24px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: opacity .15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .submit-btn:hover { opacity: .85; }
+    .submit-btn .btn-spinner {
+      display: none;
+      width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    .submit-btn.loading .btn-spinner { display: inline-block; }
+
+    /* ── Prompt section ── */
+    .prompt-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+
+    .prompt-type {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 4px;
+    }
+
+    .prompt-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">V</div>
+    <div class="logo-text"><span>VEX</span> Docs Explorer</div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Platform</div>
+      <div class="filter-group">
+        <select class="filter-select" id="filter-platform">
+          <option value="">All Platforms</option>
+          <option value="vex-iq-gen2">VEX IQ Gen 2</option>
+          <option value="vex-v5">VEX V5</option>
+          <option value="pros">PROS</option>
+          <option value="lemlib">LemLib</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Language</div>
+      <div class="filter-group">
+        <select class="filter-select" id="filter-lang">
+          <option value="">All Languages</option>
+          <option value="python">Python</option>
+          <option value="cpp">C++</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Limit</div>
+      <div class="filter-group">
+        <select class="filter-select" id="filter-limit">
+          <option value="10">10 results</option>
+          <option value="20">20 results</option>
+          <option value="30">30 results</option>
+          <option value="50">50 results</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Quick Searches</div>
+      <div class="quick-links">
+        <button class="quick-link-btn" onclick="quickSearch('Motor spin')"><span class="ql-icon">⚙</span> Motor.spin</button>
+        <button class="quick-link-btn" onclick="quickSearch('Brain battery')"><span class="ql-icon">🔋</span> Brain.Battery</button>
+        <button class="quick-link-btn" onclick="quickSearch('Drivetrain drive')"><span class="ql-icon">🚗</span> Drivetrain</button>
+        <button class="quick-link-btn" onclick="quickSearch('Sensor distance')"><span class="ql-icon">📡</span> Distance Sensor</button>
+        <button class="quick-link-btn" onclick="quickSearch('Controller button')"><span class="ql-icon">🎮</span> Controller</button>
+        <button class="quick-link-btn" onclick="quickSearch('wait sleep timer')"><span class="ql-icon">⏱</span> Timers / Wait</button>
+        <button class="quick-link-btn" onclick="quickSearch('PID control')"><span class="ql-icon">🔁</span> PID Control</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- Search bar -->
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="Search VEX documentation… e.g. Motor.spin, Brain.Battery, Drivetrain" />
+      <button class="search-btn" onclick="doSearch()">Search</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" id="tab-search" onclick="switchTab('search')">Search Results</button>
+      <button class="tab" id="tab-api" onclick="switchTab('api')">Get API Docs</button>
+    </div>
+
+    <!-- Search Results Panel -->
+    <div id="panel-search">
+      <div id="search-results">
+        <div class="empty-state">
+          <div class="big-icon">🔍</div>
+          <h3>Search VEX Documentation</h3>
+          <p>Type a query above to find API references, methods, and examples<br>across VEX IQ, V5, PROS, and LemLib platforms.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Get API Panel -->
+    <div id="panel-api" style="display:none">
+      <div class="get-api-form">
+        <div class="form-row">
+          <div class="form-group" style="grid-column: 1 / -1">
+            <label>API Name</label>
+            <input type="text" id="api-name" placeholder="e.g. Brain.Battery.voltage, motor.spin, Motor.spinFor" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Platform</label>
+            <select id="api-platform">
+              <option value="">Auto-detect</option>
+              <option value="vex-iq-gen2">VEX IQ Gen 2</option>
+              <option value="vex-v5">VEX V5</option>
+              <option value="pros">PROS</option>
+              <option value="lemlib">LemLib</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Language</label>
+            <select id="api-lang">
+              <option value="">Auto-detect</option>
+              <option value="python">Python</option>
+              <option value="cpp">C++</option>
+            </select>
+          </div>
+          <div class="form-group" style="display:flex; align-items:flex-end">
+            <button class="submit-btn" id="get-api-btn" onclick="doGetApi()">
+              <span class="btn-spinner"></span>
+              Look Up
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="api-result"></div>
+    </div>
+
+    <!-- Detail Panel (overlays both tabs) -->
+    <div id="detail-panel">
+      <div class="detail-header">
+        <button class="back-btn" onclick="closeDetail()">← Back</button>
+        <div class="detail-title" id="detail-title"></div>
+        <div id="detail-badges"></div>
+      </div>
+      <div id="detail-body"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const MCP_URL = 'https://vexmcp.ct839.com/mcp';
+  let reqId = 100;
+  let currentTab = 'search';
+  let beforeDetailTab = 'search';
+
+  // ── MCP call ──────────────────────────────────────────────────────────
+  async function mcpCall(method, params) {
+    const id = reqId++;
+    const res = await fetch(MCP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream' },
+      body: JSON.stringify({ jsonrpc: '2.0', id, method, params })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    return data.result;
+  }
+
+  async function toolCall(name, args) {
+    const result = await mcpCall('tools/call', { name, arguments: args });
+    const text = result?.content?.[0]?.text;
+    if (!text) throw new Error('Empty response from server');
+    return JSON.parse(text);
+  }
+
+  // ── Tabs ──────────────────────────────────────────────────────────────
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tab-search').classList.toggle('active', tab === 'search');
+    document.getElementById('tab-api').classList.toggle('active', tab === 'api');
+    document.getElementById('panel-search').style.display = tab === 'search' ? '' : 'none';
+    document.getElementById('panel-api').style.display = tab === 'api' ? '' : 'none';
+    document.getElementById('detail-panel').classList.remove('visible');
+  }
+
+  // ── Search ────────────────────────────────────────────────────────────
+  async function doSearch() {
+    const q = document.getElementById('search-input').value.trim();
+    if (!q) return;
+    const platform = document.getElementById('filter-platform').value;
+    const limit = parseInt(document.getElementById('filter-limit').value);
+
+    closeDetail();
+    switchTab('search');
+
+    const el = document.getElementById('search-results');
+    el.innerHTML = `<div class="loading"><div class="spinner"></div><br>Searching VEX docs…</div>`;
+
+    try {
+      const args = { query: q, limit };
+      const data = await toolCall('search', args);
+      renderResults(data, platform);
+    } catch(e) {
+      el.innerHTML = `<div class="error-box">Error: ${e.message}</div>`;
+    }
+  }
+
+  function renderResults(data, platformFilter) {
+    const el = document.getElementById('search-results');
+    let results = data.results || [];
+
+    if (platformFilter) {
+      const pf = platformFilter.toLowerCase();
+      results = results.filter(r => r.platform?.toLowerCase().includes(pf.replace('vex-iq-gen2','iq').replace('vex-v5','v5')));
+    }
+
+    const langFilter = document.getElementById('filter-lang').value;
+    if (langFilter) {
+      results = results.filter(r => r.language?.toLowerCase() === langFilter);
+    }
+
+    if (!results.length) {
+      el.innerHTML = `
+        <div id="results-count">No results for "${data.query}"</div>
+        <div class="empty-state">
+          <div class="big-icon">🤷</div>
+          <h3>No results found</h3>
+          <p>Try a different query, or clear the platform/language filter.</p>
+        </div>`;
+      return;
+    }
+
+    const minScore = Math.min(...results.map(r => r.score));
+    const maxScore = Math.max(...results.map(r => r.score));
+
+    el.innerHTML = `<div id="results-count">${results.length} result${results.length !== 1 ? 's' : ''} for <strong>"${data.query}"</strong></div>` +
+      results.map(r => {
+        const langBadge = r.language?.toLowerCase() === 'python'
+          ? `<span class="badge badge-lang-py">Python</span>`
+          : r.language?.toLowerCase() === 'c++'
+            ? `<span class="badge badge-lang-cpp">C++</span>` : '';
+        const platBadge = r.platform ? `<span class="badge badge-platform">${r.platform}</span>` : '';
+        const tags = (r.tags || []).slice(0, 5).map(t => `<span class="tag">${t}</span>`).join('');
+        // Normalize score: lower = better for this API
+        const pct = maxScore > minScore
+          ? Math.round((1 - (r.score - minScore) / (maxScore - minScore)) * 100)
+          : 100;
+
+        return `<button class="result-card" onclick="openDetailFromUri('${r.uri}', '${escHtml(r.title)}')" aria-label="${escHtml(r.title)}">
+          <div class="result-card-top">
+            <div class="result-title">${escHtml(r.title)}</div>
+            <div class="result-badges">${langBadge}${platBadge}</div>
+          </div>
+          <div class="result-desc">${escHtml(r.description || '')}</div>
+          <div class="result-tags">${tags}</div>
+          <div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>
+        </button>`;
+      }).join('');
+  }
+
+  function quickSearch(q) {
+    document.getElementById('search-input').value = q;
+    doSearch();
+  }
+
+  // ── Get API ───────────────────────────────────────────────────────────
+  async function doGetApi() {
+    const api = document.getElementById('api-name').value.trim();
+    if (!api) return;
+    const platform = document.getElementById('api-platform').value;
+    const language = document.getElementById('api-lang').value;
+
+    const btn = document.getElementById('get-api-btn');
+    btn.classList.add('loading');
+
+    closeDetail();
+    const el = document.getElementById('api-result');
+    el.innerHTML = `<div class="loading"><div class="spinner"></div><br>Looking up API…</div>`;
+
+    try {
+      const data = await toolCall('get-api', { api, platform, language });
+      renderApiResult(data);
+    } catch(e) {
+      el.innerHTML = `<div class="error-box">Error: ${e.message}</div>`;
+    } finally {
+      btn.classList.remove('loading');
+    }
+  }
+
+  function renderApiResult(data) {
+    const el = document.getElementById('api-result');
+    if (!data.found) {
+      const alts = (data.alternatives || []).map(a =>
+        `<button class="alt-item" onclick="fetchAndShowDetail('${a.uri}', '${escHtml(a.title)}')">
+          <span class="alt-title">${escHtml(a.title)}</span>
+          <span class="alt-score">score ${a.score.toFixed(4)}</span>
+        </button>`
+      ).join('');
+      el.innerHTML = `
+        <div class="error-box" style="margin-bottom:16px">${escHtml(data.message)}</div>
+        ${alts ? `<div class="section-title">Similar APIs</div><div class="alt-list">${alts}</div>` : ''}`;
+      return;
+    }
+    showDetailFromData(data.match || data);
+    el.innerHTML = '';
+  }
+
+  // ── Detail panel ──────────────────────────────────────────────────────
+  async function openDetailFromUri(uri, title) {
+    beforeDetailTab = currentTab;
+    const apiName = uriToApiName(uri);
+    document.getElementById('detail-title').textContent = title;
+    document.getElementById('detail-badges').innerHTML = '';
+    document.getElementById('detail-body').innerHTML = `<div class="loading"><div class="spinner"></div><br>Loading docs…</div>`;
+    document.getElementById('detail-panel').classList.add('visible');
+    document.getElementById('panel-search').style.display = 'none';
+    document.getElementById('panel-api').style.display = 'none';
+
+    try {
+      const data = await toolCall('get-api', { api: apiName });
+      if (data.found) showDetailFromData(data.match || data);
+      else showDetailNotFound(data);
+    } catch(e) {
+      document.getElementById('detail-body').innerHTML = `<div class="error-box">Error: ${e.message}</div>`;
+    }
+  }
+
+  async function fetchAndShowDetail(uri, title) {
+    openDetailFromUri(uri, title);
+  }
+
+  function uriToApiName(uri) {
+    // vex-api://vex-iq-gen2/python/motor/spin.md → Brain.Battery.voltage style
+    const parts = uri.replace('vex-api://', '').split('/');
+    // parts: [platform, lang, ...path, file.md]
+    const pathParts = parts.slice(2);
+    return pathParts.map(p => p.replace('.md', '')).join('.');
+  }
+
+  function showDetailFromData(doc) {
+    const fm = doc.frontmatter || {};
+    document.getElementById('detail-title').textContent = doc.title || fm.title || '';
+
+    const langBadge = fm.language?.toLowerCase() === 'python'
+      ? `<span class="badge badge-lang-py">Python</span>`
+      : fm.language?.toLowerCase() === 'c++'
+        ? `<span class="badge badge-lang-cpp">C++</span>` : '';
+    const platBadge = fm.platform ? `<span class="badge badge-platform">${fm.platform}</span>` : '';
+    document.getElementById('detail-badges').innerHTML = `<div style="display:flex;gap:6px;margin-left:8px">${langBadge}${platBadge}</div>`;
+
+    let html = '';
+
+    // Summary
+    if (fm.summary || doc.description) {
+      html += `<p style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px">${escHtml(fm.summary || doc.description)}</p>`;
+    }
+
+    // Signature
+    if (fm.signature) {
+      html += `<div class="section-title">Signature</div>
+        <div class="signature-box">${escHtml(fm.signature)}</div>`;
+    }
+
+    // Grid: level, category, original URL
+    const gridItems = [];
+    if (fm.level) gridItems.push(['Level', fm.level]);
+    if (fm.category) gridItems.push(['Category', fm.category]);
+    if (fm.original_url) gridItems.push(['Original Docs', `<a href="${fm.original_url}" target="_blank" style="color:var(--blue)">${fm.original_url}</a>`]);
+
+    if (gridItems.length) {
+      html += `<div class="detail-grid" style="grid-template-columns:${gridItems.length > 2 ? '1fr 1fr 2fr' : '1fr 1fr'}">` +
+        gridItems.map(([label, val]) => `<div class="detail-card"><div class="detail-card-label">${label}</div><div class="detail-card-value">${val}</div></div>`).join('') +
+        `</div>`;
+    }
+
+    // Starter code
+    if (fm.starter_code) {
+      html += `<div class="section-title">Starter Code</div>
+        <div class="code-block">${escHtml(fm.starter_code)}</div>`;
+    }
+
+    // Learning objectives
+    if (fm.learning_objectives?.length) {
+      html += `<div class="section-title">Learning Objectives</div>
+        <ul class="obj-list">${fm.learning_objectives.map(o => `<li>${escHtml(o)}</li>`).join('')}</ul>`;
+    }
+
+    // Challenge goal
+    if (fm.challenge_goal) {
+      html += `<div class="section-title">Challenge</div>
+        <div class="prompt-item"><div class="prompt-text">${escHtml(fm.challenge_goal)}</div></div>`;
+    }
+
+    // Default prompts
+    if (fm.default_prompts?.length) {
+      html += `<div class="section-title">Suggested Prompts</div>` +
+        fm.default_prompts.map(p => `<div class="prompt-item">
+          <div class="prompt-type">${escHtml(p.type)}</div>
+          <div class="prompt-text">${escHtml(p.prompt)}</div>
+        </div>`).join('');
+    }
+
+    // Tags
+    if (fm.tags?.length) {
+      html += `<div class="section-title">Tags</div>
+        <div class="result-tags">${fm.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>`;
+    }
+
+    // Prerequisites
+    if (fm.prerequisites?.length) {
+      html += `<div class="section-title">Prerequisites</div>
+        <ul class="obj-list">${fm.prerequisites.map(p => `<li>${escHtml(p)}</li>`).join('')}</ul>`;
+    }
+
+    document.getElementById('detail-body').innerHTML = html || '<p style="color:var(--muted)">No additional details available.</p>';
+  }
+
+  function showDetailNotFound(data) {
+    const alts = (data.alternatives || []).map(a =>
+      `<button class="alt-item" onclick="fetchAndShowDetail('${a.uri}', '${escHtml(a.title)}')">
+        <span class="alt-title">${escHtml(a.title)}</span>
+        <span class="alt-score">score ${a.score.toFixed(4)}</span>
+      </button>`
+    ).join('');
+    document.getElementById('detail-body').innerHTML = `
+      <div class="error-box" style="margin-bottom:16px">${escHtml(data.message || 'Not found')}</div>
+      ${alts ? `<div class="section-title">Similar APIs</div><div class="alt-list">${alts}</div>` : ''}`;
+  }
+
+  function closeDetail() {
+    document.getElementById('detail-panel').classList.remove('visible');
+    if (currentTab === 'search') {
+      document.getElementById('panel-search').style.display = '';
+    } else {
+      document.getElementById('panel-api').style.display = '';
+    }
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────
+  function escHtml(s) {
+    if (!s) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── Keyboard shortcut ─────────────────────────────────────────────────
+  document.getElementById('search-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  document.getElementById('api-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doGetApi();
+  });
+</script>
+</body>
+</html>

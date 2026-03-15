@@ -1,0 +1,8 @@
+{
+    "mcpServers": {
+      "ctvex": {
+        "type": "http",
+        "url": "https://vexmcp.ct839.com/mcp"
+      }
+    }
+  }
